@@ -1,0 +1,14 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+
+    {% for listing in listings %}
+    
+        <p> Listing: {{listing.title}} </p>
+        <p> {{listing.description}} </p>
+        {% if listing.imgURL %}
+        <p> {{listing.imgURL}} </p>
+        {%endif%}
+    {%endfor%}
+{% endblock %}

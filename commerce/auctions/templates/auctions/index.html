@@ -5,10 +5,12 @@
 
     {% for listing in listings %}
     
-        <p> Listing: {{listing.title}} </p>
-        <p> {{listing.description}} </p>
+        <h1> <a href="{% url 'listing_page' listing.title %}">{{listing.title}}</a> </h1>
+        <h2> {{listing.description}} </h2>
+        <p> {{listing.bid}}</p>
         {% if listing.imgURL %}
-        <p> {{listing.imgURL}} </p>
+        <img src="{{listing.imgURL}}">
         {%endif%}
+        
     {%endfor%}
 {% endblock %}

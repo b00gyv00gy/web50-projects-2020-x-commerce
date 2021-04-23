@@ -3,9 +3,9 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
 
-from .models import User, Listing, Bid, Comment
-
+from .models import User, Listing, Comment, Watchlist
 
 def index(request):
     return render(request, "auctions/index.html",{
@@ -65,13 +65,14 @@ def register(request):
         return render(request, "auctions/register.html")
 
 def create_listing(request):
+
     if request.method == "POST":
         title = request.POST["title"]
         description = request.POST["description"]
-        starting_bid = request.POST["starting_bid"]
+        bid = request.POST["bid"]
         imgURL = request.POST["imgURL"]
         try:
-            listing = Listing(title=title, description=description, starting_bid=starting_bid, imgURL=imgURL)
+            listing = Listing(title=title, description=description, bid=bid, imgURL=imgURL)
             listing.save()
         except IntegrityError:
             return render(request, "auctions/create_listing.html", {
@@ -80,3 +81,35 @@ def create_listing(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/create_listing.html")
+
+def listing_page(request, title):
+    
+    message = None
+    listing = Listing.objects.get(title=title)
+    
+    is_on_watchlist = Watchlist.objects.filter(listing=listing, user=request.user).exists()
+    
+    if is_on_watchlist:
+        message = "Remove from watchlist"
+    else:
+        message = "Add to watchlist"    
+
+    if request.method == "POST":
+        
+        try:
+            entry = Watchlist(listing=listing, user=request.user)
+            entry.save()
+            message = "Added to watchlist"
+    
+        except IntegrityError:
+            pass
+        
+        if is_on_watchlist:
+            Watchlist.objects.filter(listing=listing, user=request.user).delete()
+            message = "Removed from watchlist"
+    
+    return render(request, "auctions/listing_page.html",{
+        "listing": listing,
+        "message": message
+    })
+    

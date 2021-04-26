@@ -71,8 +71,9 @@ def create_listing(request):
         description = request.POST["description"]
         bid = request.POST["bid"]
         imgURL = request.POST["imgURL"]
+        creator = request.user
         try:
-            listing = Listing(title=title, description=description, bid=bid, imgURL=imgURL)
+            listing = Listing(title=title, description=description, bid=bid, imgURL=imgURL, creator=creator)
             listing.save()
         except IntegrityError:
             return render(request, "auctions/create_listing.html", {
@@ -96,20 +97,28 @@ def listing_page(request, title):
 
     if request.method == "POST":
         
-        try:
-            entry = Watchlist(listing=listing, user=request.user)
-            entry.save()
-            message = "Added to watchlist"
-    
-        except IntegrityError:
-            pass
+        if "watchlist" in request.POST:
         
-        if is_on_watchlist:
-            Watchlist.objects.filter(listing=listing, user=request.user).delete()
-            message = "Removed from watchlist"
+            try:
+                entry = Watchlist(listing=listing, user=request.user)
+                entry.save()
+                message = "Added to watchlist"
+        
+            except IntegrityError:
+                pass
+        
+            if is_on_watchlist:
+                Watchlist.objects.filter(listing=listing, user=request.user).delete()
+                message = "Removed from watchlist"
+        
+        if "bid" in request.POST:
+        
+            listing.bid = request.POST["bid_value"]
+            listing.last_bidder = request.user
     
     return render(request, "auctions/listing_page.html",{
         "listing": listing,
-        "message": message
+        "message": message,
+        "current_bid": listing.bid
     })
     

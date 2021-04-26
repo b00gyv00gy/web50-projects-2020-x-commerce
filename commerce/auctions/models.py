@@ -10,7 +10,8 @@ class Listing(models.Model):
     description = models.TextField()
     bid = models.FloatField(default="0")
     imgURL = models.URLField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="%(class)s_foo")
+    last_bidder = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="%(class)s_bar")
 
 class Comment(models.Model):
     comment = models.TextField()

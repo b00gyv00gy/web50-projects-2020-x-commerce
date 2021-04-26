@@ -12,13 +12,19 @@
     {%endif%}
 
     {% if user.is_authenticated %}
-    
-    <p> </p>
+    <p> 
         <form action="" method="post">
             {% csrf_token %}
-            <input type="submit" value="{{message}}">
+            <input type="submit" name="watchlist" value="{{message}}">
         </form>
-        
+    </p>
+    <p> 
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="number" name="bid_value" min="{{current_bid}}">
+            <input type="submit" name="bid" value="Place your bid">
+        </form>
+    </p>     
     {% endif %}
     
 {% endblock %}

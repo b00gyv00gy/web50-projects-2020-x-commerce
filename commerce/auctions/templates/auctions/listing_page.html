@@ -1,6 +1,10 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+    {% if not listing.status %}
+    <h1> {{closed_auction_message}} </h1>
+    {%endif%}
+
     <h2>{{listing.title}}</h2>
 
     <h1> {{listing.description}} </h1>
@@ -11,20 +15,43 @@
     <img src="{{listing.imgURL}}">
     {%endif%}
 
+    {%if comments%}
+        {% for comment in comments%}
+        <p> {{comment.comment}}</p>
+        {%endfor%}
+    {%endif%}
+
     {% if user.is_authenticated %}
-    <p> 
-        <form action="" method="post">
-            {% csrf_token %}
-            <input type="submit" name="watchlist" value="{{watchlist_button_message}}">
-        </form>
-    </p>
-    <p> 
-        <form action="" method="post">
-            {% csrf_token %}
-            <input type="number" name="bid_value" min="{{required_min_bid}}" placeholder="Min bid is {{required_min_bid}}">
-            <input type="submit" name="bid" value="Place your bid">
-        </form>
-    </p>     
+        {% if listing.status %}
+        <p> 
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="submit" name="watchlist" value="{{watchlist_button_message}}">
+            </form>
+        </p>
+        <p> 
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="number" name="bid_value" min="{{required_min_bid}}" placeholder="Min bid is {{required_min_bid}}">
+                <input type="submit" name="bid" value="Place your bid">
+            </form>
+        </p>
+        {%if is_creator %}
+            <p> 
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="submit" name="close_listing" value="Close auction">
+                </form>
+            </p>
+        {%endif%}
+        <p> 
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="text" name="content" placeholder="Type your comment here">
+                <input type="submit" name="comment" value="Submit your comment">
+            </form>
+        </p>
+        {%endif%}
     {% endif %}
     
 {% endblock %}

@@ -9,10 +9,10 @@ class Listing(models.Model):
     title = models.CharField(max_length=64, default="empty")
     description = models.TextField()
     bid = models.FloatField(default="0")
-    imgURL = models.URLField()
+    imgURL = models.URLField(blank=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="%(class)s_foo")
     last_bidder = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="%(class)s_bar")
-    #status = models.BooleanField(default="True")
+    status = models.BooleanField(default=True)
 
 class Comment(models.Model):
     comment = models.TextField()

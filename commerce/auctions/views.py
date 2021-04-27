@@ -69,9 +69,10 @@ def create_listing(request):
     if request.method == "POST":
         title = request.POST["title"]
         description = request.POST["description"]
-        bid = request.POST["bid"]
+        bid = request.POST['starting_bid']
         imgURL = request.POST["imgURL"]
         creator = request.user
+        last_bidder = request.user
         try:
             listing = Listing(title=title, description=description, bid=bid, imgURL=imgURL, creator=creator)
             listing.save()
@@ -85,18 +86,21 @@ def create_listing(request):
 
 def listing_page(request, title):
     
-    message = None
+    watchlist_button_message = None
+    closed_auction_message = None
     listing = get_object_or_404(Listing, title=title)
     required_min_bid = listing.bid + 1
+    is_creator = False
+    comments = Comment.objects.filter(listing=listing)
 
     if request.user.is_authenticated:
 
         is_on_watchlist = Watchlist.objects.filter(listing=listing, user=request.user).exists()
         
         if is_on_watchlist:
-            message = "Remove from watchlist"
+            watchlist_button_message = "Remove from watchlist"
         else:
-            message = "Add to watchlist"    
+            watchlist_button_message = "Add to watchlist"    
 
         if request.method == "POST":
             
@@ -105,14 +109,14 @@ def listing_page(request, title):
                 try:
                     entry = Watchlist(listing=listing, user=request.user)
                     entry.save()
-                    message = "Added to watchlist"
+                    watchlist_button_message = "Added to watchlist"
             
                 except IntegrityError:
                     pass
             
                 if is_on_watchlist:
                     Watchlist.objects.filter(listing=listing, user=request.user).delete()
-                    message = "Removed from watchlist"
+                    watchlist_button_message = "Removed from watchlist"
             
             if "bid" in request.POST:
                 
@@ -124,13 +128,36 @@ def listing_page(request, title):
                         listing.bid = bid
                         listing.last_bidder = request.user
                         listing.save()
-        
-        #if request.user == listing.user:
             
+            if "comment" in request.POST:
+                
+                #if request.POST["comment"]:
+
+                    comment = Comment(comment=request.POST["content"], listing=listing, user=request.user)
+                    comment.save()
+        
+        if request.user == listing.creator:
+            is_creator = True
+
+            if request.method == "POST":
+            
+                if "close_listing" in request.POST:
+                    listing.status = False
+                    listing.save()
+            
+        if listing.status == False:
+            
+            closed_auction_message = "Auction is closed"
+
+            if  request.user == listing.last_bidder:
+                closed_auction_message = "Auction is closed. You are the winner."      
 
     return render(request, "auctions/listing_page.html",{
         "listing": listing,
-        "watchlist_button_message": message,
-        "required_min_bid": required_min_bid
+        "watchlist_button_message": watchlist_button_message,
+        "required_min_bid": required_min_bid,
+        "is_creator": is_creator,
+        "closed_auction_message": closed_auction_message,
+        "comments": comments
     })
     

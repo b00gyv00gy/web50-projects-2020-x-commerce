@@ -160,4 +160,9 @@ def listing_page(request, title):
         "closed_auction_message": closed_auction_message,
         "comments": comments
     })
-    
+
+def watchlist(request):
+    return render(request, "auctions/watchlist.html",{
+        "watchlists": Watchlist.objects.filter(user=request.user)
+    })
+        

@@ -5,13 +5,15 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django import forms
 
-from .models import User, Listing, Comment, Watchlist
+from .models import User, Listing, Comment, Watchlist, Category
+
+class CategoryForm(forms.Form):
+    category = forms.ModelChoiceField(queryset=Category.objects.all())
 
 def index(request):
     return render(request, "auctions/index.html",{
         "listings": Listing.objects.all()
     })
-
 
 def login_view(request):
     if request.method == "POST":
@@ -66,6 +68,8 @@ def register(request):
 
 def create_listing(request):
 
+    form = CategoryForm(request.POST)
+
     if request.method == "POST":
         title = request.POST["title"]
         description = request.POST["description"]
@@ -73,8 +77,11 @@ def create_listing(request):
         imgURL = request.POST["imgURL"]
         creator = request.user
         last_bidder = request.user
+        if form.is_valid():
+            category = form.cleaned_data['category']
+        
         try:
-            listing = Listing(title=title, description=description, bid=bid, imgURL=imgURL, creator=creator)
+            listing = Listing(title=title, description=description, bid=bid, imgURL=imgURL, creator=creator, category=category)
             listing.save()
         except IntegrityError:
             return render(request, "auctions/create_listing.html", {
@@ -82,7 +89,9 @@ def create_listing(request):
             })
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "auctions/create_listing.html")
+        return render(request, "auctions/create_listing.html",{
+        "form": form
+    })
 
 def listing_page(request, title):
     
@@ -164,5 +173,19 @@ def listing_page(request, title):
 def watchlist(request):
     return render(request, "auctions/watchlist.html",{
         "watchlists": Watchlist.objects.filter(user=request.user)
+    })
+
+def categories(request):
+    return render(request, "auctions/categories.html",{
+        "categories": Category.objects.all()
+    })
+
+def active_listings_in_category(request, title):
+    
+    category = get_object_or_404(Category, name=title)
+    listings = Listing.objects.filter(category=category)
+
+    return render(request, "auctions/index.html",{
+        "listings": listings
     })
         

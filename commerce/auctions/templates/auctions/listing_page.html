@@ -4,21 +4,38 @@
     {% if not listing.status %}
     <h1> {{closed_auction_message}} </h1>
     {%endif%}
+    <div class="container">
+            
+        <div class="row">
+            <div class="col">
+                {% if listing.imgURL %}
+                    <img src="{{listing.imgURL}}">
+                {%endif%}
+              </div>
+          <div class="col">
+            <p>Title: </p> {{listing.title}}
+          </div>
+          <div class="col">
+            <p>Description: </p> {{listing.description}}
+          </div>
+          <div class="col">
+            <p>Last bid: </p> {{listing.bid}}
+          </div>
+        </div>
+      </div>
 
-    <h2>{{listing.title}}</h2>
-
-    <h1> {{listing.description}} </h1>
-    
-    <p> {{listing.bid}}</p>
-    
-    {% if listing.imgURL %}
-    <img src="{{listing.imgURL}}">
-    {%endif%}
 
     {%if comments%}
+    <div class="container">
+        <div class="row">
+          <div class="col-md-4">Comments:</div>  
+        </div>
         {% for comment in comments%}
-        <p> {{comment.comment}}</p>
+        <div class="row">
+          <div class="col-md-6 offset-md-3">{{comment.comment}}</div>
+        </div>
         {%endfor%}
+      </div>    
     {%endif%}
 
     {% if user.is_authenticated %}

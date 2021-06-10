@@ -7,13 +7,28 @@
 
         {% if listing.status == True %}
             
-            <h1> <a href="{% url 'listing_page' listing.title %}">{{listing.title}}</a> </h1>
-            <h2> {{listing.description}} </h2>
-            <p> {{listing.bid}}</p>
+        <div class="container">
             
-            {% if listing.imgURL %}
-            <img src="{{listing.imgURL}}">
-            {%endif%}
+            <div class="row">
+                <div class="col">
+                    {% if listing.imgURL %}
+                        <img src="{{listing.imgURL}}">
+                    {%endif%}
+                  </div>
+              <div class="col">
+                <a href="{% url 'listing_page' listing.title %}">{{listing.title}}</a>
+              </div>
+              <div class="col">
+                {{listing.description}}
+              </div>
+              <div class="col">
+                {{listing.bid}}
+              </div>
+            </div>
+          </div>
+          
+            
+            
         
         {%endif%}       
     

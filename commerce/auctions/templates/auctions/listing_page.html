@@ -4,35 +4,34 @@
     {% if not listing.status %}
     <h1> {{closed_auction_message}} </h1>
     {%endif%}
-    <div class="container">
+    <div class="card">
             
-        <div class="row">
-            <div class="col">
-                {% if listing.imgURL %}
-                    <img src="{{listing.imgURL}}">
-                {%endif%}
-              </div>
-          <div class="col">
-            <p>Title: </p> {{listing.title}}
-          </div>
-          <div class="col">
-            <p>Description: </p> {{listing.description}}
-          </div>
-          <div class="col">
-            <p>Last bid: </p> {{listing.bid}}
-          </div>
+      <div class="row no-gutters">
+        <div class="col">
+          <div class="embed-responsive embed-responsive-16by9">
+            {% if listing.imgURL %}
+            <img alt="Card image cap" class="card-img-top embed-responsive-item" src="{{listing.imgURL}}" />
+            {%endif%}
+          </div>            
+        </div>
+        <div class="col">
+          <div class="card-block px-2">
+            <h4><a class="card-title">{{listing.title}}</a></h4>
+            <p class="card-text"> Description: {{listing.description}} </p>
+            <p> Bid: {{listing.bid}}</p>  
         </div>
       </div>
+    </div>
 
 
     {%if comments%}
     <div class="container">
         <div class="row">
-          <div class="col-md-4">Comments:</div>  
+          <div class="col-md-4"><h4>Comments:</h4></div>  
         </div>
         {% for comment in comments%}
         <div class="row">
-          <div class="col-md-6 offset-md-3">{{comment.comment}}</div>
+          <div class="col-md-6">{{comment.comment}}</div>
         </div>
         {%endfor%}
       </div>    

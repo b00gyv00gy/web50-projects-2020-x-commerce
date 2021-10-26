@@ -137,6 +137,7 @@ def listing_page(request, title):
                         listing.bid = bid
                         listing.last_bidder = request.user
                         listing.save()
+                        required_min_bid = bid + 1
             
             if "comment" in request.POST:
                 

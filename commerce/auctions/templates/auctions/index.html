@@ -7,26 +7,24 @@
 
         {% if listing.status == True %}
             
-        <div class="container">
+        <div class="card">
             
-            <div class="row">
-                <div class="col">
-                    {% if listing.imgURL %}
-                        <img src="{{listing.imgURL}}">
-                    {%endif%}
-                  </div>
-              <div class="col">
-                <a href="{% url 'listing_page' listing.title %}">{{listing.title}}</a>
-              </div>
-              <div class="col">
-                {{listing.description}}
-              </div>
-              <div class="col">
-                {{listing.bid}}
-              </div>
+          <div class="row no-gutters">
+            <div class="col">
+              <div class="embed-responsive embed-responsive-16by9">
+                {% if listing.imgURL %}
+                <img alt="Card image cap" class="card-img-top embed-responsive-item" src="{{listing.imgURL}}" />
+                {%endif%}
+              </div>            
+            </div>
+            <div class="col">
+              <div class="card-block px-2">
+                <h4><a class="card-title" href="{% url 'listing_page' listing.title %}">{{listing.title}}</a></h4>
+                <p class="card-text"> Description: {{listing.description}} </p>
+                <p> Bid: {{listing.bid}}</p>  
             </div>
           </div>
-          
+        </div>
             
             
         
